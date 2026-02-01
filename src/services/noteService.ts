@@ -2,7 +2,7 @@ import type { Note } from '../types/note';
 import type { PostNote } from '../types/note';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_NOTEHUB_TOKEN;
+const TOKEN = import.meta.env.VITE_NOTEHUB_TOKEN;
 
 interface HTTPResponse {
   notes: Note[];
@@ -14,7 +14,7 @@ export async function fetchNotes(query: string, page: number) {
     'https://notehub-public.goit.study/api/notes',
     {
       headers: {
-        Authorization: `Bearer ${API_URL}`,
+        Authorization: `Bearer ${TOKEN}`,
       },
       params: {
         search: query,
@@ -31,7 +31,7 @@ export async function createNote(note: PostNote): Promise<Note> {
     'https://notehub-public.goit.study/api/notes', note, 
     {
       headers: {
-        Authorization: `Bearer ${API_URL}`,
+        Authorization: `Bearer ${TOKEN}`,
       },
     }
   );
@@ -43,7 +43,7 @@ export async function deleteNote(id: string): Promise<Note> {
     `https://notehub-public.goit.study/api/notes/${id}`,
     {
       headers: {
-        Authorization: `Bearer ${API_URL}`,
+        Authorization: `Bearer ${TOKEN}`,
       },
     }
   );
