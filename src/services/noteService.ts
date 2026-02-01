@@ -27,7 +27,7 @@ export async function fetchNotes(query: string, page: number) {
 
 export async function createNote(title: string, content: string, tag: string) {
   const response = await axios.post<Note>(
-    'https://notehub-public.goit.study/api/',
+    'https://notehub-public.goit.study/api/notes',
     {
       headers: {
         Authorization: `Bearer ${API_URL}`,
@@ -44,7 +44,7 @@ export async function createNote(title: string, content: string, tag: string) {
 
 export async function deleteNote(id: string) {
   const response = await axios.delete<Note>(
-    `https://notehub-public.goit.study/api/`,
+    `https://notehub-public.goit.study/api/notes`,
     {
       params: {
         id,
