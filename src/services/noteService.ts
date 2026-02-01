@@ -26,8 +26,8 @@ export async function fetchNotes(query: string, page: number) {
   return response.data;
 }
 
-export async function createNote(note: PostNote) {
-  await axios.post(
+export async function createNote(note: PostNote): Promise<Note> {
+  const response = await axios.post(
     'https://notehub-public.goit.study/api/notes', note, 
     {
       headers: {
@@ -35,10 +35,11 @@ export async function createNote(note: PostNote) {
       },
     }
   );
+  return response.data;
 }
 
-export async function deleteNote(id: string) {
-  await axios.delete<Note>(
+export async function deleteNote(id: string): Promise<Note> {
+  const response = await axios.delete<Note>(
     `https://notehub-public.goit.study/api/notes/${id}`,
     {
       headers: {
@@ -46,4 +47,5 @@ export async function deleteNote(id: string) {
       },
     }
   );
+  return response.data;
 }

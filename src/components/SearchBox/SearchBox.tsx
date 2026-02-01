@@ -2,7 +2,7 @@ import css from './SearchBox.module.css';
 import { useDebouncedCallback } from 'use-debounce';
 
 interface SearchBoxProps {
-  onChange: (query: string) => void;
+  onChange: (value: string) => void;
 }
 
 function SearchBox({ onChange }: SearchBoxProps) {

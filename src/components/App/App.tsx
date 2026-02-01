@@ -1,21 +1,18 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { fetchNotes, createNote, deleteNote } from '../../services/noteService';
+import { fetchNotes } from '../../services/noteService';
 import NoteList from '../NoteList/NoteList';
 import Pagination from '../Pagination/Pagination';
 import SearchBox from '../SearchBox/SearchBox';
 import Modal from '../Modal/Modal';
 import NoteForm from '../NoteForm/NoteForm';
 import css from './App.module.css';
-import type { PostNote } from '../../types/note';
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useDebouncedCallback } from 'use-debounce';
 
 function App() {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notes', query, page],
@@ -24,32 +21,10 @@ function App() {
     placeholderData: keepPreviousData,
   });
 
-  const postMethod = useMutation({
-    mutationFn: (note: PostNote) => {
-      return createNote(note);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
-  });
-
-  const handlePost = (note: PostNote) => {
-    postMethod.mutate(note);
-    closeModal();
-  };
-
-  const deleteMethod = useMutation({
-    mutationFn: (id: string) => {
-      return deleteNote(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
-  });
-
-  const handleDelete = (id: string) => {
-    deleteMethod.mutate(id);
-  };
+  const handleChange = useDebouncedCallback((value: string) => {
+    setQuery(value);
+    setPage(1);
+  }, 1000);
 
   const totalPages = data ? data.totalPages : 1;
 
@@ -59,7 +34,7 @@ function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onChange={setQuery} />
+        <SearchBox onChange={handleChange} />
         {totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
@@ -71,14 +46,12 @@ function App() {
           Create note +
         </button>
       </header>
-      {data && data.notes.length > 0 && (
-        <NoteList noteList={data.notes} onDelete={handleDelete} />
-      )}
+      {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
       {isLoading && <p>Loading...</p>}
       {isError && <p>Error fetching notes.</p>}
       {isModalOpen && (
         <Modal onClose={closeModal}>
-          <NoteForm onClose={closeModal} onPost={handlePost} />
+          <NoteForm onClose={closeModal} />
         </Modal>
       )}
     </div>

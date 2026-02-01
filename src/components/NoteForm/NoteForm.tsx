@@ -1,8 +1,9 @@
-import { Formik, Form, Field } from 'formik';
-import type { FormikHelpers } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import css from './NoteForm.module.css';
 import type { PostNote } from '../../types/note';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { createNote } from '../../services/noteService';
 
 const CreateNoteSchema = Yup.object().shape({
   title: Yup.string()
@@ -11,8 +12,7 @@ const CreateNoteSchema = Yup.object().shape({
     .required('Title is required'),
   content: Yup.string()
     .min(3, 'Content have to be at least 3 character')
-    .max(500, 'Content is too long')
-    .required('Content is required'),
+    .max(500, 'Content is too long'),
   tag: Yup.mixed()
     .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'])
     .required('Type has to be selected'),
@@ -26,24 +26,37 @@ const initialValues: PostNote = {
 
 interface NoteFormProps {
   onClose: () => void;
-  onPost: (note: PostNote) => void;
 }
 
-function NoteForm({ onClose, onPost }: NoteFormProps) {
-  const handleSubmit = (values: PostNote, actions: FormikHelpers<PostNote>) => {
-    onPost(values);
-    actions.resetForm();
+function NoteForm({ onClose }: NoteFormProps) {
+
+  const queryClient = useQueryClient();
+
+  const postMethod = useMutation({
+    mutationFn: (note: PostNote) => {
+      return createNote(note);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    },
+  });
+
+  const handlePost = (note: PostNote) => {
+    postMethod.mutate(note);
+    onClose();
   };
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={handleSubmit}
+      onSubmit={handlePost}
       validationSchema={CreateNoteSchema}
     >
       <Form className={css.form}>
         <div className={css.formGroup}>
           <label htmlFor={`title`}>Title</label>
           <Field id="title" type="text" name="title" className={css.input} />
+          <ErrorMessage name="title" component="span" className={css.error} />
         </div>
         <div className={css.formGroup}>
           <label htmlFor={`content`}>Content</label>
@@ -54,6 +67,7 @@ function NoteForm({ onClose, onPost }: NoteFormProps) {
             rows={8}
             className={css.textarea}
           />
+          <ErrorMessage name="content" component="span" className={css.error} />
         </div>
         <div className={css.formGroup}>
           <label htmlFor={`tag`}>Tag</label>
@@ -64,6 +78,7 @@ function NoteForm({ onClose, onPost }: NoteFormProps) {
             <option value="Meeting">Meeting</option>
             <option value="Shopping">Shopping</option>
           </Field>
+          <ErrorMessage name="tag" component="span" className={css.error} />
         </div>
         <div className={css.actions}>
           <button onClick={onClose} type="button" className={css.cancelButton}>
