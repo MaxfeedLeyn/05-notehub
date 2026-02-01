@@ -27,7 +27,7 @@ export async function fetchNotes(query: string, page: number) {
 }
 
 export async function createNote(note: PostNote): Promise<Note> {
-  const response = await axios.post(
+  const response = await axios.post<Note>(
     'https://notehub-public.goit.study/api/notes', note, 
     {
       headers: {

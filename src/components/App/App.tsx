@@ -17,7 +17,6 @@ function App() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['notes', query, page],
     queryFn: () => fetchNotes(query, page),
-    enabled: query !== '',
     placeholderData: keepPreviousData,
   });
 

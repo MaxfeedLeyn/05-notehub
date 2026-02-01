@@ -37,13 +37,13 @@ function NoteForm({ onClose }: NoteFormProps) {
       return createNote(note);
     },
     onSuccess: () => {
+      onClose();
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
   const handlePost = (note: PostNote) => {
     postMethod.mutate(note);
-    onClose();
   };
 
   return (
