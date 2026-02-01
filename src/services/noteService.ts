@@ -8,9 +8,9 @@ interface HTTPResponse {
   totalPages: number;
 }
 
-async function fetchNotes(query: string, page: number) {
+export async function fetchNotes(query: string, page: number) {
   const response = await axios.get<HTTPResponse>(
-    'https://notehub-public.goit.study/api/',
+    'https://notehub-public.goit.study/api/notes',
     {
       headers: {
         Authorization: `Bearer ${API_URL}`,
@@ -18,20 +18,21 @@ async function fetchNotes(query: string, page: number) {
       params: {
         search: query,
         page,
+        perPage: 12,
       },
     }
   );
   return response.data;
 }
 
-async function createNote(title: string, content: string, tag: string) {
+export async function createNote(title: string, content: string, tag: string) {
   const response = await axios.post<Note>(
     'https://notehub-public.goit.study/api/',
     {
       headers: {
         Authorization: `Bearer ${API_URL}`,
       },
-      params: {
+      data: {
         title,
         content,
         tag,
@@ -41,7 +42,7 @@ async function createNote(title: string, content: string, tag: string) {
   return response.data;
 }
 
-async function deleteNote(id: string) {
+export async function deleteNote(id: string) {
   const response = await axios.delete<Note>(
     `https://notehub-public.goit.study/api/`,
     {
@@ -55,5 +56,3 @@ async function deleteNote(id: string) {
   );
   return response.data;
 }
-
-export default fetchNotes;
