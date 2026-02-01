@@ -1,10 +1,16 @@
-export interface Note{
-    id: string;
-    title: string;
-    content: string;
-    createdAt: Date;
-    updatedAt: Date;
-    tag: NoteTag;
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  tag: NoteTag;
 }
 
-export type NoteTag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+export interface PostNote {
+  title: string;
+  content: string;
+  tag: NoteTag;
+}
+
+export type NoteTag = 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';

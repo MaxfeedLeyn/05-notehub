@@ -1,13 +1,8 @@
-import { Formik, Form, Field, FormikHelpers } from 'formik';
+import { Formik, Form, Field } from 'formik';
+import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import css from './NoteForm.module.css';
-import type { NoteTag } from '../../types/note';
-
-interface CreateNoteValues {
-  title: string;
-  content: string;
-  tag: NoteTag;
-}
+import type { PostNote } from '../../types/note';
 
 const CreateNoteSchema = Yup.object().shape({
   title: Yup.string()
@@ -23,24 +18,20 @@ const CreateNoteSchema = Yup.object().shape({
     .required('Type has to be selected'),
 });
 
-const initialValues: CreateNoteValues = {
+const initialValues: PostNote = {
   title: '',
   content: '',
   tag: 'Todo',
 };
 
 interface NoteFormProps {
-    onClose: () => void;
-    onPost: () => void;
+  onClose: () => void;
+  onPost: (note: PostNote) => void;
 }
 
-function NoteForm({onClose, onPost}: NoteFormProps) {
-  const handleSubmit = (
-    values: CreateNoteValues,
-    actions: FormikHelpers<CreateNoteValues>
-  ) => {
-    onPost();
-    console.log('Post data: ', values);
+function NoteForm({ onClose, onPost }: NoteFormProps) {
+  const handleSubmit = (values: PostNote, actions: FormikHelpers<PostNote>) => {
+    onPost(values);
     actions.resetForm();
   };
   return (
